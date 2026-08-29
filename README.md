@@ -41,38 +41,32 @@ limitations under the License.
 
 <!-- /.intro -->
 
+<section class="installation">
 
+## Installation
+
+```bash
+npm install @stdlib/blas-ext-base-ndarray-dfill-equal
+```
+
+Alternatively,
+
+-   To load the package in a website via a `script` tag without installation and bundlers, use the [ES Module][es-module] available on the [`esm`][esm-url] branch (see [README][esm-readme]).
+-   If you are using Deno, visit the [`deno`][deno-url] branch (see [README][deno-readme] for usage intructions).
+-   For use in Observable, or in browser/node environments, use the [Universal Module Definition (UMD)][umd] build available on the [`umd`][umd-url] branch (see [README][umd-readme]).
+
+The [branches.md][branches-url] file summarizes the available branches and displays a diagram illustrating their relationships.
+
+To view installation and usage instructions specific to each branch build, be sure to explicitly navigate to the respective README files on each branch, as linked to above.
+
+</section>
 
 <section class="usage">
 
 ## Usage
 
-To use in Observable,
-
 ```javascript
-dfillEqual = require( 'https://cdn.jsdelivr.net/gh/stdlib-js/blas-ext-base-ndarray-dfill-equal@umd/browser.js' )
-```
-
-To vendor stdlib functionality and avoid installing dependency trees for Node.js, you can use the UMD server build:
-
-```javascript
-var dfillEqual = require( 'path/to/vendor/umd/blas-ext-base-ndarray-dfill-equal/index.js' )
-```
-
-To include the bundle in a webpage,
-
-```html
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/stdlib-js/blas-ext-base-ndarray-dfill-equal@umd/browser.js"></script>
-```
-
-If no recognized module system is present, access bundle contents via the global scope:
-
-```html
-<script type="text/javascript">
-(function () {
-    window.dfillEqual;
-})();
-</script>
+var dfillEqual = require( '@stdlib/blas-ext-base-ndarray-dfill-equal' );
 ```
 
 #### dfillEqual( arrays )
@@ -93,8 +87,16 @@ var alpha = scalar2ndarray( 5.0, {
     'dtype': 'float64'
 });
 
-dfillEqual( [ x, searchElement, alpha ] );
-// x => <ndarray>[ 5.0, -2.0, 3.0, 5.0, 4.0, -6.0 ]
+var start = scalar2ndarray( 0, {
+    'dtype': 'generic'
+});
+
+var end = scalar2ndarray( 2, {
+    'dtype': 'generic'
+});
+
+dfillEqual( [ x, searchElement, alpha, start, end ] );
+// x => <ndarray>[ 5.0, -2.0, 3.0, 0.0, 4.0, -6.0 ]
 ```
 
 The function has the following parameters:
@@ -104,6 +106,8 @@ The function has the following parameters:
     -   a one-dimensional input ndarray.
     -   a zero-dimensional ndarray containing the search element.
     -   a zero-dimensional ndarray containing the scalar constant.
+    -   a zero-dimensional ndarray containing the starting index (inclusive).
+    -   a zero-dimensional ndarray containing the ending index (exclusive).
 
 </section>
 
@@ -114,6 +118,7 @@ The function has the following parameters:
 ## Notes
 
 -   The input ndarray is modified **in-place** (i.e., the input ndarray is **mutated**).
+-   If a specified `start` or `end` index is negative, the function resolves the respective index by counting backward from the last element (where `-1` refers to the last element).
 -   When comparing elements, the function checks for equality using the strict equality operator `===`. As a consequence, `NaN` values are considered distinct and `-0` and `+0` are considered the same.
 
 </section>
@@ -126,23 +131,18 @@ The function has the following parameters:
 
 <!-- eslint no-undef: "error" -->
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<body>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/stdlib-js/random-discrete-uniform@umd/browser.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/stdlib-js/ndarray-from-scalar@umd/browser.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/stdlib-js/ndarray-to-array@umd/browser.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/stdlib-js/ndarray-ndarraylike2scalar@umd/browser.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/stdlib-js/blas-ext-base-ndarray-dfill-equal@umd/browser.js"></script>
-<script type="text/javascript">
-(function () {
+```javascript
+var discreteUniform = require( '@stdlib/random-discrete-uniform' );
+var scalar2ndarray = require( '@stdlib/ndarray-from-scalar' );
+var ndarray2array = require( '@stdlib/ndarray-to-array' );
+var ndarraylike2scalar = require( '@stdlib/ndarray-ndarraylike2scalar' );
+var dfillEqual = require( '@stdlib/blas-ext-base-ndarray-dfill-equal' );
 
 var opts = {
     'dtype': 'float64'
 };
 
-var x = discreteUniform( [ 10 ], 0, 3, opts );
+var x = discreteUniform( [ 20 ], 0, 3, opts );
 console.log( ndarray2array( x ) );
 
 var searchElement = scalar2ndarray( 1.0, opts );
@@ -151,13 +151,18 @@ console.log( 'Search Element: %d', ndarraylike2scalar( searchElement ) );
 var alpha = scalar2ndarray( 5.0, opts );
 console.log( 'Alpha: %d', ndarraylike2scalar( alpha ) );
 
-dfillEqual( [ x, searchElement, alpha ] );
-console.log( ndarray2array( x ) );
+var start = scalar2ndarray( 5, {
+    'dtype': 'generic'
+});
+console.log( 'Start Index: %d', ndarraylike2scalar( start ) );
 
-})();
-</script>
-</body>
-</html>
+var end = scalar2ndarray( 15, {
+    'dtype': 'generic'
+});
+console.log( 'End Index: %d', ndarraylike2scalar( end ) );
+
+dfillEqual( [ x, searchElement, alpha, start, end ] );
+console.log( ndarray2array( x ) );
 ```
 
 </section>
